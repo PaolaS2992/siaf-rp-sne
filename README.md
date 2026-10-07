@@ -9,7 +9,7 @@ alternar roles y perfiles.
 
 ## Requisitos
 
-- Node.js 20 (ver `.nvmrc`) y npm.
+- Node.js 24 (ver `.nvmrc`) y npm.
 
 ## Cómo correrlo
 
