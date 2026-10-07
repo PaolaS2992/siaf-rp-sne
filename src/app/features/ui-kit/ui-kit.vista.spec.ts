@@ -109,7 +109,7 @@ describe('ui-kit.vista', () => {
     const de = (selector: string) => fichas.find((f) => f.selector === selector)!;
 
     it('es la relación inversa de los componentes que pinta, ordenada por nombre', () => {
-      expect(de('siaf-badge').usadoPor.map((u) => u.nombre)).toEqual(['siaf-list', 'siaf-navbar', 'siaf-tabs', 'siaf-tray-menu']);
+      expect(de('siaf-badge').usadoPor.map((u) => u.nombre)).toEqual(['siaf-form-table-search', 'siaf-list', 'siaf-navbar', 'siaf-tabs', 'siaf-tray-menu']);
       for (const f of fichas) {
         for (const usado of f.componentesUsados) {
           const hijo = fichas.find((x) => x.selector === usado.selector);

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 
+import { BadgeComponent } from '../../ui/badge/badge.component';
 import { IconComponent } from '../../ui/icon/icon.component';
 import { TextFieldComponent } from '../../ui/text-field/text-field.component';
 
@@ -9,6 +10,9 @@ import { TextFieldComponent } from '../../ui/text-field/text-field.component';
  *
  * Con `variant="reports"` es el buscador de Consultas y reportes (Figma «Guía de Estructura de Pantallas», nodo
  * 22402:16457 «Search for table»): el segundo botón pasa a ser Columnas (`view_column`), que emite `columns`.
+ *
+ * Con `filterCount` mayor que 0, el botón Filtrar muestra un badge azul con ese número (filtros avanzados activos, como
+ * los niveles de agrupación aplicados).
  *
  * Escribir solo registra el texto: la búsqueda sale por `valueChange` al pulsar Enter o la lupa, y lo tecleado se
  * descarta si el padre reescribe `value`.
@@ -54,7 +58,7 @@ import { TextFieldComponent } from '../../ui/text-field/text-field.component';
 @Component({
   selector: 'siaf-form-table-search',
   standalone: true,
-  imports: [IconComponent, TextFieldComponent],
+  imports: [BadgeComponent, IconComponent, TextFieldComponent],
   template: `
     <div class="flex w-full items-start gap-siaf-md">
       <!-- Campo del design system: etiqueta flotante y borde de éxito, igual
@@ -72,15 +76,28 @@ import { TextFieldComponent } from '../../ui/text-field/text-field.component';
       />
 
       <div class="flex shrink-0 items-start gap-siaf-xs">
-        <button
-          class="inline-flex size-10 items-center justify-center rounded-siaf-md text-text transition hover:bg-surface-muted active:bg-[var(--sys-color-bg-states-dark-pressed)] disabled:cursor-not-allowed disabled:text-[var(--sys-color-text-neutral-disabled)] disabled:hover:bg-transparent focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--sys-color-border-states-focus)]"
-          type="button"
-          [attr.aria-label]="filterLabel"
-          [disabled]="disabled"
-          (click)="filter.emit()"
-        >
-          <siaf-icon name="filter_list" [size]="24" />
-        </button>
+        <div class="relative">
+          <button
+            class="inline-flex size-10 items-center justify-center rounded-siaf-md text-text transition hover:bg-surface-muted active:bg-[var(--sys-color-bg-states-dark-pressed)] disabled:cursor-not-allowed disabled:text-[var(--sys-color-text-neutral-disabled)] disabled:hover:bg-transparent focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--sys-color-border-states-focus)]"
+            type="button"
+            [attr.aria-label]="filterLabel"
+            [disabled]="disabled"
+            (click)="filter.emit()"
+          >
+            <siaf-icon name="filter_list" [size]="24" />
+          </button>
+          <!-- Indicador de filtros avanzados activos (ej. niveles de agrupación). -->
+          @if (filterCount > 0) {
+            <siaf-badge
+              class="pointer-events-none absolute right-0.5 top-0.5"
+              color="primary"
+              size="small"
+              [label]="filterCount"
+              [max]="99"
+              [ariaLabel]="filterCount + ' filtros avanzados aplicados'"
+            />
+          }
+        </div>
         <!-- Segundo botón según la variante: Más opciones o, en Consultas y reportes, Columnas. -->
         <button
           class="inline-flex size-10 items-center justify-center rounded-siaf-md text-text transition hover:bg-surface-muted active:bg-[var(--sys-color-bg-states-dark-pressed)] disabled:cursor-not-allowed disabled:text-[var(--sys-color-text-neutral-disabled)] disabled:hover:bg-transparent focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--sys-color-border-states-focus)]"
@@ -117,6 +134,8 @@ export class FormTableSearchComponent implements OnChanges {
   /** Nombre accesible del botón Columnas de la variante `reports`. */
   @Input() columnsLabel = 'Ocultar o mostrar columnas';
   @Input() disabled = false;
+  /** Cantidad de filtros avanzados activos: con > 0, pinta un badge azul sobre el botón Filtrar. */
+  @Input() filterCount = 0;
 
   @Output() valueChange = new EventEmitter<string>();
   @Output() filter = new EventEmitter<void>();

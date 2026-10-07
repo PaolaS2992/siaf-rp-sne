@@ -118,6 +118,7 @@ const norm = (t: string): string => t.normalize('NFD').replace(/\p{Diacritic}/gu
               <siaf-form-table-search
                 variant="reports"
                 [value]="busqueda()"
+                [filterCount]="filtrosCount()"
                 ariaLabel="Buscar en el resultado"
                 (valueChange)="busqueda.set($event)"
                 (filter)="panelFiltros.set(true)"
@@ -185,6 +186,12 @@ export class ReportePreliminarConsultasComponent {
   readonly busqueda = signal('');
 
   private readonly dataset = signal<DeudaProyeccionRegistro[]>([]);
+
+  /** Filtros avanzados activos (niveles de agrupación + condiciones): alimenta el badge del botón Filtrar. */
+  readonly filtrosCount = computed(() => {
+    const f = this.filtros();
+    return f ? f.niveles.length + f.condiciones.length : 0;
+  });
 
   /** Registros que cumplen los parámetros de consulta y las condiciones de «Filtros avanzados». */
   readonly registrosConsultados = computed<DeudaProyeccionRegistro[]>(() => {
